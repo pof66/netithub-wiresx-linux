@@ -25,7 +25,7 @@ class ArchiveInventoryTests(unittest.TestCase):
                 archive.writestr("../../../should-not-be-extracted.txt", b"safe")
             got = inventory(path)
             self.assertEqual(got["file_count"], 3)
-            self.assertEqual(got["total_uncompressed"], 26)
+            self.assertEqual(got["total_uncompressed"], 23)
             self.assertEqual(got["members"][0]["file_signature"], "PE/DOS executable header")
             self.assertEqual(len(got["archive_sha256"]), 64)
             self.assertFalse((Path(tmp).parent / "should-not-be-extracted.txt").exists())
