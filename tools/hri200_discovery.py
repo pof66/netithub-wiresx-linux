@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# Copyright 2026 IU0NDT
+# SPDX-License-Identifier: Apache-2.0
+# Source: https://github.com/pof66/netithub-wiresx-linux
+
 """Discover HRI-200 USB serial and ALSA endpoints via Linux sysfs (read-only).
 
 This tool does NOT open /dev/tty*, /dev/snd/* or /dev/hidraw*; it never sends
