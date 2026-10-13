@@ -17,8 +17,10 @@ Read-only PowerShell device enumeration reported the following with OK status:
 | Component | Windows device | USB identity | Windows service |
 | --- | --- | --- | --- |
 | HRI-200 Communication device A | COM21 | VID 26AA, PID 0002 | `usbser` |
-| HRI-200 A (CH1) USB Audio codec | MEDIA | VID 26AA, PID 0003, MI 00 | not yet checked |
-| USB composite device and HID interfaces | USB / HIDClass | VID 26AA, PID 0003 | not yet checked |
+| HRI-200 A (CH1) USB Audio codec | MEDIA | VID 26AA, PID 0003, MI 00 | `usbaudio` |
+| USB composite device | USB | VID 26AA, PID 0003 | `usbccgp` |
+| USB input HID | HIDClass | VID 26AA, PID 0003, MI 03 | `HidUsb` |
+| HID consumer-control collection | HIDClass | VID 26AA, PID 0003, MI 03 | service not reported (PnP status OK) |
 
 `USB\\Class_02&SubClass_02&Prot_01` is advertised among compatible IDs for PID 0002, consistent with a CDC ACM serial function. **Native Linux `cdc_acm` binding is still to be verified on real hardware.** No hardware writes, firmware updates, or RF transmissions were performed.
 
