@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Source: https://github.com/pof66/netithub-wiresx-linux
 
-"""Discover HRI-200 USB serial and ALSA endpoints via Linux sysfs (read-only).
+"""Discover HRI-200 USB serial, ALSA and HID endpoints via sysfs (read-only).
 
 This tool does NOT open /dev/tty*, /dev/snd/* or /dev/hidraw*; it never sends
 commands, captures audio, adjusts controls or contacts network services.
@@ -102,6 +102,35 @@ def discover(sys_class: Path = Path("/sys/class"),
             "pcm": pcms,
         })
 
+    # Match hidraw class devices through their actual USB device ancestors.
+    # The HID node is identified for inventory only; it is never opened.
+    hid: list[dict[str, Any]] = []
+    for raw in _entries(sys_class / "hidraw"):
+        if not raw.name.startswith("hidraw") or not raw.name[6:].isdigit():
+            continue
+        device = raw / "device"
+        usb = _usb_ancestor(device, vendor, audio_pid)
+        if usb is None:
+            continue
+        try:
+            hid_instance = device.resolve(strict=True).name
+        except (OSError, RuntimeError):
+            continue
+        # Audio and HID can be associated to the *same* USB 26aa:0003
+        # device. The serial 26aa:0002 device is distinct; do NOT infer
+        # unique physical pairing of multiple HRI-200 units from one hub.
+        audio_cards = [
+            card["card"] for card in audio if card["usb_port"] == usb.name
+        ]
+        hid.append({
+            "device": "/dev/" + raw.name,
+            "hid_instance": hid_instance,
+            "usb_port": usb.name,
+            "vid": vendor.lower(),
+            "pid": audio_pid.lower(),
+            "audio_cards_same_usb_device": audio_cards,
+        })
+
     # Never silently associate endpoints when more than one candidate exists.
     status = (
         "missing_endpoint" if not serial or not audio else
@@ -109,9 +138,10 @@ def discover(sys_class: Path = Path("/sys/class"),
         "one_serial_one_audio_candidate"
     )
     return {
-        "schema": "hri200-linux-discovery-v1",
+        "schema": "hri200-linux-discovery-v2",
         "serial": serial,
         "audio": audio,
+        "hid": hid,
         "status": status,
         "note": "Candidate enumeration only; no hardware I/O or proven physical USB pairing.",
     }
