@@ -1,3 +1,7 @@
+# Copyright 2026 IU0NDT
+# SPDX-License-Identifier: Apache-2.0
+# Source: https://github.com/pof66/netithub-wiresx-linux
+
 """Isolated regression tests for the read-only HRI-200 sysfs probe."""
 import tempfile
 import unittest
