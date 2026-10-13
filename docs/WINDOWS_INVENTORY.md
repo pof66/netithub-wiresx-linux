@@ -16,9 +16,9 @@ WIRES-X, update firmware, or transmit RF.
 Open Windows PowerShell **without Administrator rights** in the local
 repository directory, then run:
 
-\`\`\`powershell
+```powershell
 .\tools\windows\hri200_inventory.ps1
-\`\`\`
+```
 
 The report appears as JSON in the terminal. No output file is created.
 
@@ -26,9 +26,9 @@ If Windows execution policy blocks local scripts, do not change the
 machine's policy as part of this diagnostic. The equivalent initial
 read-only inventory may be run directly as a one-liner:
 
-\`\`\`powershell
+```powershell
 Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match 'VID_26AA' } | Select-Object Status,Class,FriendlyName
-\`\`\`
+```
 
 ## Output fields
 
@@ -53,14 +53,24 @@ user-supplied labels.
 | Driver description | HRI-200 Communication device A |
 | Driver provider | YAESU MUSEN CO., LTD. |
 | USB-compatible class | 02 / 02 / 01 (CDC ACM style) |
-| Audio A (CH1), composite USB, HID | PID 0003 |
+| USB Audio A (CH1) | PID 0003 / MI 00; Windows service `usbaudio`; PnP status OK |
+| USB composite parent | PID 0003; Windows service `usbccgp`; PnP status OK |
+| USB input HID | PID 0003 / MI 03; Windows service `HidUsb`; PnP status OK |
+| HID-compatible consumer control | PID 0003 / MI 03; PnP status OK; Windows service not returned by this command |
 
 The COM number is host-specific and **must never be hardcoded** in the Linux
 program. The full serial command framing and HID semantics are still unknown.
 
+
+### Additional Windows verification (same date)
+
+Read-only PowerShell queried present devices whose PnP instance identifier contains `VID_26AA&PID_0003`. All four rows reported status `OK`, with service names `usbaudio`, `usbccgp`, `HidUsb`, and an empty service entry for the additional consumer-control HID collection. **An empty service field does not indicate failure**; it may be a logical HID child device rather than a separately serviced USB interface. The command returned no audio streaming data, HID reports, endpoint descriptors, or control framing.
+
+For initial Linux comparison, likely kernel components are `snd-usb-audio`, `usbhid`, and `cdc_acm`. Actual Raspberry Pi binding and end-to-end functionality remain unverified.
+
 ## Next verification gate
 
 Once Linux testing hardware is explicitly available, perform sysfs
-enumeration with \`tools/usb_probe.py\` and compare descriptors and
+enumeration with `tools/usb_probe.py` and compare descriptors and
 kernel driver bindings. Opening USB/serial endpoints for bidirectional
 experiments is a *separate permission gate*, not part of this survey.
