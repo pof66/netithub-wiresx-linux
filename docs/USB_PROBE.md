@@ -334,3 +334,24 @@ No Report ID item appears, and there is only one declared input report, whose **
 **Project direction:** do not invest in speculative HID PTT writes. Keep this HID as a read-only optional device in portable discovery; focus future control-protocol research on documented/observed interactions with the separate CDC ACM serial interface in a safely isolated environment. Live CDC control, DTR/RTS and audio I/O remain outside the current authorization.
 
 **Next safe path confirmation:** `readlink -f /sys/class/hidraw/hidraw0/device`, to validate sysfs ancestry for portable future HID discovery. `hidraw0` is this host's current name only, not a hardcoded application setting.
+
+
+### HIDRAW USB ancestry verified and discovery tool extended
+
+Operator ran the following command on the Raspberry Pi 4:
+
+```sh
+readlink -f /sys/class/hidraw/hidraw0/device
+```
+
+Kernel sysfs returned:
+
+```text
+/sys/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.3/1-1.3.2/1-1.3.2:1.3/0003:26AA:0003.0001
+```
+
+The HIDRAW class node points to HID instance `0003:26AA:0003.0001` beneath USB interface `1-1.3.2:1.3`, itself a child of the same YAESU `26aa:0003` USB device `1-1.3.2` as the independently confirmed ALSA audio card (`1-1.3.2:1.0`). This is **strong evidence for common USB-device parentage of AUDIO and HID**. Serial remains a distinct `26aa:0002` USB device (`1-1.3.1`). On hosts with multiple HRI-200 units, common upstream hub attachment alone **must not** be treated as proof that any particular 0002/0003 pair is one physical unit.
+
+**Code change (not yet tested on hardware):** `tools/hri200_discovery.py` now also scans `/sys/class/hidraw/hidrawN/device`, walks sysfs ancestry to `26aa:0003` and inventories `/dev/hidrawN` by name. The JSON output adds a `hid` collection and schema marker `hri200-linux-discovery-v2`, with `audio_cards_same_usb_device` for matches to the **same** 0003 parent. Existing `status` still describes serial/audio candidates; HID is optional. The tool **never opens** the HIDRAW character device, serial port or audio PCM. Unit tests use synthetic sysfs trees and remain subject to execution/validation.
+
+**Next safe hardware milestone:** fetch the updated script from GitHub (no daemon/install) into `/tmp` and run it via `python3 -B` read-only; the operator must approve each command. `hidraw0` and the sysfs topology are observations, not defaults.
