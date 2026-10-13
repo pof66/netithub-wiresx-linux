@@ -64,3 +64,18 @@ $ lsusb -t
 **Not verified:** the assignment of a usable `/dev/ttyACM*` character device, ALSA audio capture/playback, HID reports, any HRI-200 command exchanges, PTT, RF, Internet registration, or WIRES-X room operation.
 
 **Next read-only check:** `ls -l /dev/ttyACM*` to see the corresponding serial device, with no opening, line control, or writes to the device. Avoid mapping the runtime to a fixed tty number: hotplug and multi-adapter hosts can renumber devices. A stable discovery policy will be designed after this check.
+
+### CDC ACM character device available (2026-10-13)
+
+Operator's subsequent read-only Linux command:
+
+```text
+# ls -l /dev/ttyACM*
+crw-rw---- 1 root dialout 166, 0 Oct 13 23:58 /dev/ttyACM0
+```
+
+The Linux host exposes at least one ACM serial character device, `/dev/ttyACM0`, major/minor `166:0`, owned by `root:dialout`. This is consistent with the YAESU `cdc_acm` driver binding observed immediately before, but a per-device sysfs parent check is still required to **prove the association unambiguously** if other CDC hardware is attached. This is **not** evidence that the proprietary HRI-200 command protocol has been discovered or that a WIRES-X session works.
+
+Do not embed `/dev/ttyACM0` as a fixed path in the final program; interface discovery must resolve a stable hardware identity at runtime. No serial device was opened or written to in this test.
+
+**Next independent gate:** identify ALSA sound cards via `cat /proc/asound/cards` (read-only); later map the selected ALSA card's sysfs USB parent to vendor `26aa` and product `0003`.
