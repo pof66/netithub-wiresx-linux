@@ -37,7 +37,7 @@ The operator connected a real HRI-200 to a Raspberry Pi 4 Linux host and obtaine
 | 26aa:0003 audio/HID | 0, 1, 2 (Audio) | `snd-usb-audio` | 12 Mbit/s |
 | 26aa:0003 audio/HID | 3 (HID) | `usbhid` | 12 Mbit/s |
 
-**The kernel-side USB recognition milestone has been achieved** without installing a YAESU driver. No serial session, audio sample, HID exchange, RF, proprietary network authentication or functional WIRES-X operation has been tested. Next step: inspect the character device nodes using read-only commands. See [USB test evidence](docs/USB_PROBE.md).
+**The kernel-side USB recognition milestone and first live Python discovery milestone have been achieved.** On Raspberry Pi 4 with Python 3.13.5, the actual [`tools/hri200_discovery.py`](tools/hri200_discovery.py) script identified the HRI-200's `26aa:0002` serial device and `26aa:0003` audio device and reported one serial and one audio candidate. These are read-only sysfs results; no serial session, PCM audio stream, HID report, RF transmission, proprietary network authentication or functional WIRES-X operation has been tested. See [USB test evidence](docs/USB_PROBE.md).
 
 ## Design requirements
 
