@@ -79,3 +79,19 @@ The Linux host exposes at least one ACM serial character device, `/dev/ttyACM0`,
 Do not embed `/dev/ttyACM0` as a fixed path in the final program; interface discovery must resolve a stable hardware identity at runtime. No serial device was opened or written to in this test.
 
 **Next independent gate:** identify ALSA sound cards via `cat /proc/asound/cards` (read-only); later map the selected ALSA card's sysfs USB parent to vendor `26aa` and product `0003`.
+
+### ALSA card registered on Raspberry Pi 4 (2026-10-13)
+
+The operator ran a read-only ALSA inventory command:
+
+```text
+# cat /proc/asound/cards
+ 0 [codec          ]: USB-Audio - HRI-200 A(CH1) USB Audio codec
+                      YAESU MUSEN Co., Ltd. HRI-200 A(CH1) USB Audio codec at usb-0000:01:00.0-1.3.2,
+```
+
+**Confirmed:** the Linux ALSA subsystem has registered the YAESU HRI-200 USB Audio codec with ALSA card ID `codec` and currently assigned card index `0`. This corroborates the `snd-usb-audio` driver binding seen in `lsusb -t`.
+
+**Not yet confirmed:** USB audio PCM stream direction, accessible sound formats, capture/playback operation, latency or interaction with WIRES-X control. Do not assume that card index `0` is stable across reboots/hotplug or use it as a portable default.
+
+**Next read-only inspection:** `cat /proc/asound/card0/stream0` (only for this observed session) to view the USB audio streaming descriptors and supported formats without starting any stream, recording or playback.
