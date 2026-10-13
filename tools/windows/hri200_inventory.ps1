@@ -1,3 +1,7 @@
+# Copyright 2026 IU0NDT
+# SPDX-License-Identifier: Apache-2.0
+# Source: https://github.com/pof66/netithub-wiresx-linux
+
 # HRI-200 USB inventory for Windows PowerShell 5.1 or later.
 # Read-only: queries Plug and Play device properties. Never opens serial,
 # audio or HID endpoints and never changes any system configuration.
