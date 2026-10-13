@@ -1,0 +1,42 @@
+# Python-generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+private/
+
+# Proprietary software, firmware, and captured traffic
+*.exe
+*.dll
+*.sys
+*.inf
+*.chm
+*.zip
+*.7z
+*.rar
+*.bin
+*.hex
+*.pcap
+*.pcapng
+captures/
+vendor/
+
+# Editor and platform-specific
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
