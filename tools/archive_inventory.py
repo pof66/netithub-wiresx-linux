@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# Copyright 2026 IU0NDT
+# SPDX-License-Identifier: Apache-2.0
+# Source: https://github.com/pof66/netithub-wiresx-linux
+
 """Offline metadata-only inventory for vendor ZIP files.
 
 No member is extracted or executed. This tool is not a disassembler or a
