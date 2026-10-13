@@ -283,3 +283,17 @@ Result:
 Interpretation: Linux HID bus `0003` exposes an HRI-200 audio/composite device `VID:PID 26aa:0003` as HID instance `0001`. Together with the previously observed `usbhid` binding, this confirms **enumeration of the HID interface**, not accessible `hidraw`, report descriptor interpretation, HID command semantics, PTT or WIRES-X session functionality. The instance suffix is not stable and should never be hardcoded.
 
 **Next single read-only hardware check:** list `/sys/bus/hid/devices/0003:26AA:0003.0001/hidraw/` to see whether a `hidrawN` class node is exposed (do not open the node). Follow with offline HID report-descriptor inspection under explicit review before any command writes.
+
+### HRI-200 HIDRAW sysfs class instance confirmed
+
+Read-only operator output from Raspberry Pi 4:
+
+```text
+# ls -l /sys/bus/hid/devices/0003:26AA:0003.0001/hidraw/
+total 0
+drwxr-xr-x 3 root root 0 Oct 13 23:58 hidraw0
+```
+
+**Evidence:** Linux exposes a `hidraw0` class child under HID device `0003:26AA:0003.0001`. The HID interface was already observed as bound to `usbhid`; this strengthens the discovery evidence, but does **not** prove that `/dev/hidraw0` is currently present/accessible, and does not prove any HID report or command exchange. The HID instance suffix and `hidrawN` index are transient.
+
+**Proposed next non-invasive step:** read the cached **HID report descriptor** from sysfs with `od -An -tx1 -v /sys/bus/hid/devices/0003:26AA:0003.0001/report_descriptor`. This accesses a kernel sysfs attribute, not the `/dev/hidraw0` node, does not write device controls, does not assert PTT and should not affect ongoing TETRA services. Interpret with care: advertised HID report structure alone does not establish report semantics, command values, packet framing or YAESU WIRES-X compatibility. Keep read-only until separately authorized.
