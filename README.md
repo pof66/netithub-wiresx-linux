@@ -86,6 +86,7 @@ Research reports, interoperability tests, mock devices, documentation and indepe
 
 - [Windows HRI-200 PnP inventory](tools/windows/hri200_inventory.ps1) — read-only USB/driver snapshot, excludes full serial instance identifiers. See [instructions](docs/WINDOWS_INVENTORY.md).
 - [Linux HRI-200 USB probe](tools/usb_probe.py) — sysfs-only detection, no hardware ports opened. See [instructions](docs/USB_PROBE.md).
+- [Portable Linux endpoint discovery](tools/hri200_discovery.py) — matches CDC serial and ALSA card through their YAESU USB ancestors, without opening device nodes; ambiguity triggers explicit selection. [Mock-backed tests](tests/test_hri200_discovery.py).
 - [Offline vendor ZIP inventory](tools/archive_inventory.py) — bounded ZIP metadata inspection, file signatures and SHA-256 without extraction.
 - [Supplied YAESU packages](docs/YAESU_PACKAGE_ANALYSIS.md) — checksum-anchored analysis of 2.010, remote monitor 2.000 and firmware 1.01 packages, with no proprietary files uploaded.
 - [Offline test suite](tests) — synthetic fixtures. GitHub Actions definitions are in [offline-tests.yml](.github/workflows/offline-tests.yml); CI completion has not yet been independently verified.
