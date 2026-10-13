@@ -355,3 +355,55 @@ The HIDRAW class node points to HID instance `0003:26AA:0003.0001` beneath USB i
 **Code change (not yet tested on hardware):** `tools/hri200_discovery.py` now also scans `/sys/class/hidraw/hidrawN/device`, walks sysfs ancestry to `26aa:0003` and inventories `/dev/hidrawN` by name. The JSON output adds a `hid` collection and schema marker `hri200-linux-discovery-v2`, with `audio_cards_same_usb_device` for matches to the **same** 0003 parent. Existing `status` still describes serial/audio candidates; HID is optional. The tool **never opens** the HIDRAW character device, serial port or audio PCM. Unit tests use synthetic sysfs trees and remain subject to execution/validation.
 
 **Next safe hardware milestone:** fetch the updated script from GitHub (no daemon/install) into `/tmp` and run it via `python3 -B` read-only; the operator must approve each command. `hidraw0` and the sysfs topology are observations, not defaults.
+
+
+### Physical Raspberry Pi validation of discovery V2 (CDC, ALSA, HID)
+
+The operator fetched the current repository file `tools/hri200_discovery.py` as a **5,804-byte** temporary copy at `/tmp/hri200_discovery_v2.py` and executed, with Python 3.13.5:
+
+```sh
+python3 -B /tmp/hri200_discovery_v2.py
+```
+
+The **actual repository implementation** returned (selected complete identity fields):
+
+```json
+{
+  "audio": [{
+    "alsa_id": "codec",
+    "card": "card0",
+    "pcm": {
+      "capture": ["/dev/snd/pcmC0D0c"],
+      "playback": ["/dev/snd/pcmC0D0p"]
+    },
+    "pid": "0003",
+    "usb_port": "1-1.3.2",
+    "usb_product": "HRI-200 A(CH1) USB Audio codec",
+    "vid": "26aa"
+  }],
+  "hid": [{
+    "audio_cards_same_usb_device": ["card0"],
+    "device": "/dev/hidraw0",
+    "hid_instance": "0003:26AA:0003.0001",
+    "pid": "0003",
+    "usb_port": "1-1.3.2",
+    "vid": "26aa"
+  }],
+  "note": "Candidate enumeration only; no hardware I/O or proven physical USB pairing.",
+  "schema": "hri200-linux-discovery-v2",
+  "serial": [{
+    "device": "/dev/ttyACM0",
+    "pid": "0002",
+    "usb_port": "1-1.3.1",
+    "usb_product": "HRI-200 Communication device A",
+    "vid": "26aa"
+  }],
+  "status": "one_serial_one_audio_candidate"
+}
+```
+
+**Verified on physical Raspberry Pi 4:** the updated discovery code identifies `26aa:0002` CDC tty, `26aa:0003` ALSA sound card and `26aa:0003` HIDRAW class endpoint by walking sysfs USB ancestry. HID and ALSA both resolve to *the same* `1-1.3.2` USB device. Dynamic node names rather than hardcoded configuration were returned. The `status` means exactly one serial and one audio **candidate**, not proof of unique physical HRI-200 pairing when multiple units may be attached.
+
+**Not verified:** actual USB serial messages, DTR/RTS behavior, real PCM capture/playback, HID input events, RF/PTT or proprietary WIRES-X network connections. The temporary script did not open serial/audio/HID nodes; no service or TETRA configuration was changed. Synthetic offline tests added alongside V2 have **not yet been reported as executed**.
+
+**Next milestone:** declare the sysfs-based hardware-discovery stage validated for this host and plan an **offline HRI-200 CDC control-protocol research gate**, starting with public documentation and independently observed authorized behavior. Do not open a live serial port, toggle DTR/RTS, attempt command guesses, or assert RF/PTT on the TETRA server without a separate controlled test authorization.
