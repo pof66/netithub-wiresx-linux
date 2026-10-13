@@ -112,3 +112,19 @@ This confirms that standard kernel USB/ALSA drivers expose **descriptors for bot
 **Architecture consequence:** implement an ALSA adapter with runtime USB device identification (avoid `hw:0` and fixed card indices), sample-format negotiation and optional explicit channel selection/downmix/upmix/resampling. Keep audio transport separate from control (serial/HID) and from future WIRES-X network signaling. Default TX disabled.
 
 **Next read-only check:** `cat /proc/asound/pcm` to enumerate ALSA PCM logical devices and directions; do not start `arecord` or `aplay` on this shared TETRA host during descriptor-only diagnostics.
+
+### ALSA PCM logical device confirmed (operator read-only test)
+
+The operator ran `cat /proc/asound/pcm` after the previously observed HRI-200 USB audio card registration:
+
+```text
+00-00: USB Audio : USB Audio : playback 1 : capture 1
+```
+
+**Meaning:** ALSA currently exposes a playback-capable PCM subdevice and a capture-capable PCM subdevice under card 0, device 0. In this same session card 0 was identified as the HRI-200 USB Audio codec. These are two logical stream directions, not proof that both streams have passed actual audio.
+
+This confirms the driver-level discoverability gate. **Still untested:** opening PCM, audio integrity, latency, TX/PTT wiring, serial/HID command frames, and native connections to YAESU WIRES-X rooms.
+
+**Portability rule:** Never assume `hw:0,0` or `/dev/ttyACM0` is stable. Resolve the sound/serial interfaces from matching USB parent identity and inspect capabilities dynamically.
+
+**Next read-only test:** Verify the kernel-reported USB vendor/product identity of the current serial interface using a filtered `udevadm info` query. Do not open the port or assert DTR/RTS on the shared TETRA host.
