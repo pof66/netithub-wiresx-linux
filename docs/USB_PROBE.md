@@ -186,3 +186,20 @@ python3 tools/hri200_discovery.py
 ```
 
 The local TETRA machine is not modified merely by reading this script's source on GitHub; running it on the host is an explicit next action after the operator decides to fetch the repository. Synthetic tests are in `tests/test_hri200_discovery.py`.
+
+### Sysfs ALSA card interface path confirmed
+
+Operator executed a read-only command on the Raspberry Pi 4:
+
+```text
+# readlink -f /sys/class/sound/card0/device
+/sys/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.3/1-1.3.2/1-1.3.2:1.0
+```
+
+This confirms that the ALSA card's `device` symlink resolves to a **USB interface** (`1-1.3.2:1.0`), whose **immediate USB device parent** is `1-1.3.2`. Together with the earlier `udevadm --attribute-walk` evidence on the same audio PCM device (`26aa:0003`), this validates the parent traversal strategy planned in `tools/hri200_discovery.py`.
+
+Do not hardcode `card0`, USB topology addresses (`1-1.3.2`), `/sys/devices/platform/scb`, or controller paths: they are observations of one system at one moment.
+
+**Still pending:** run the Python discovery tool against the Raspberry Pi (no I/O), verify the serial device symlink topology, test cross-platform mocks and then separately evaluate actual audio/HRI control. Neither this path nor the present ALSA status demonstrates WIRES-X network connectivity.
+
+**Next single read-only check:** `readlink -f /sys/class/tty/ttyACM0/device` to inspect the USB interface ancestry for the already-identified YAESU serial endpoint.
