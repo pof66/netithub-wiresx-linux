@@ -1,3 +1,7 @@
+# Copyright 2026 IU0NDT
+# SPDX-License-Identifier: Apache-2.0
+# Source: https://github.com/pof66/netithub-wiresx-linux
+
 """Offline regression tests for sysfs-only serial/audio endpoint discovery."""
 from __future__ import annotations
 
