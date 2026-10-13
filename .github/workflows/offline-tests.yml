@@ -1,0 +1,44 @@
+name: Offline diagnostics CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python-offline:
+    name: Python offline tests (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Test offline fixtures
+        run: python -m unittest discover -s tests -v
+
+  windows-powershell-syntax:
+    name: Windows PowerShell syntax (no hardware)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse PowerShell without execution
+        shell: powershell
+        run: |
+          $tokens = $null
+          $errors = $null
+          $file = (Resolve-Path 'tools/windows/hri200_inventory.ps1').Path
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            $file, [ref]$tokens, [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | Format-List | Out-String | Write-Output
+            exit 1
+          }
+          Write-Output 'PowerShell syntax validated; no USB operations performed.'
