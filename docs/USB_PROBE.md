@@ -145,3 +145,44 @@ This **directly confirms** that the currently observed `/dev/ttyACM0` is the HRI
 **Portable discovery requirement:** at startup resolve eligible tty character devices by authoritative sysfs/udev USB ancestry (`idVendor=26aa`, `idProduct=0002`, interface 00), detect ambiguity rather than choosing the first match, expose explicit operator selection where two identical interfaces exist and never open the serial device during the read-only discovery phase. These are discovery selectors, not a valid WIRES-X session protocol.
 
 **Next hardware inventory gate:** read the current ALSA capture device udev metadata without opening audio (`/dev/snd/pcmC0D0c` as observed *only on this host at this time*). Afterwards design discovery by USB identity rather than ALSA numerical card index.
+
+### ALSA USB parent verification (Raspberry Pi operator output)
+
+The PCM capture endpoint `/dev/snd/pcmC0D0c` did not directly carry `ID_VENDOR_ID` and `ID_MODEL_ID` in its `udevadm info -q property` output. Walking the **sysfs ancestor chain**, using:
+
+```sh
+udevadm info --attribute-walk --name=/dev/snd/pcmC0D0c | grep -E 'ATTRS\{(idVendor|idProduct|product)\}'
+```
+
+revealed:
+
+```text
+ATTRS{idProduct}=="0003"
+ATTRS{idVendor}=="26aa"
+ATTRS{product}=="HRI-200 A(CH1) USB Audio codec                    "
+ATTRS{idProduct}=="2046"
+ATTRS{idVendor}=="0451"
+ATTRS{idProduct}=="3431"
+ATTRS{idVendor}=="2109"
+ATTRS{product}=="USB2.0 Hub"
+ATTRS{idProduct}=="0002"
+ATTRS{idVendor}=="1d6b"
+ATTRS{product}=="xHCI Host Controller"
+```
+
+This positively identifies the USB ancestor of the ALSA PCM endpoint as **YAESU 26aa:0003**, and also shows upstream intermediate USB hub and host controller identities that **must not be confused with HRI-200 endpoints**.
+
+### Portable endpoint inventory implementation
+
+`tools/hri200_discovery.py` performs **read-only** sysfs ancestor matching separately for:
+
+- serial: USB VID/PID `26aa:0002`, Linux CDC `ttyACM*`
+- audio: USB VID/PID `26aa:0003`, Linux ALSA `cardN` and PCM device names
+
+No driver installation, USB endpoint opening, ALSA streaming, firmware changes, serial control, network authentication, or RF transmission. If multiple matching endpoints are detected, it reports that **operator selection is required**, rather than incorrectly pairing devices by shared hub or arbitrary enumeration order. Output paths/card indices are *observations* and never deployment defaults.
+
+```sh
+python3 tools/hri200_discovery.py
+```
+
+The local TETRA machine is not modified merely by reading this script's source on GitHub; running it on the host is an explicit next action after the operator decides to fetch the repository. Synthetic tests are in `tests/test_hri200_discovery.py`.
