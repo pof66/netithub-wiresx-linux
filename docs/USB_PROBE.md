@@ -265,3 +265,21 @@ Reported Python version: **3.13.5**. The complete resulting JSON was:
 **Explicit limitations:** driver recognition does not prove physical pairing in a multi-unit setup, serial command framing, bidirectional HRI audio streams, PTT/HID functionality, or compatibility with proprietary YAESU WIRES-X networking. No USB device file was opened, no RF TX, no new daemon installed, no TETRA service change. A temporary copy of the script was downloaded to `/tmp` by the operator; the script itself performed no device I/O.
 
 **License/publication follow-up:** public-repository content and attribution terms are under review; adding LICENSE/NOTICE will require confirmation of the intended copyright holder and license selection.
+
+### Real HID sysfs instance found on Raspberry Pi
+
+The operator executed this **read-only** command on the running Raspberry Pi 4:
+
+```sh
+find /sys/bus/hid/devices -maxdepth 1 -iname '*26AA:0003*' -printf '%f\n'
+```
+
+Result:
+
+```text
+0003:26AA:0003.0001
+```
+
+Interpretation: Linux HID bus `0003` exposes an HRI-200 audio/composite device `VID:PID 26aa:0003` as HID instance `0001`. Together with the previously observed `usbhid` binding, this confirms **enumeration of the HID interface**, not accessible `hidraw`, report descriptor interpretation, HID command semantics, PTT or WIRES-X session functionality. The instance suffix is not stable and should never be hardcoded.
+
+**Next single read-only hardware check:** list `/sys/bus/hid/devices/0003:26AA:0003.0001/hidraw/` to see whether a `hidrawN` class node is exposed (do not open the node). Follow with offline HID report-descriptor inspection under explicit review before any command writes.
