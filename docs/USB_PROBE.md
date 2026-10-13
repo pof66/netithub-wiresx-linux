@@ -95,3 +95,20 @@ The operator ran a read-only ALSA inventory command:
 **Not yet confirmed:** USB audio PCM stream direction, accessible sound formats, capture/playback operation, latency or interaction with WIRES-X control. Do not assume that card index `0` is stable across reboots/hotplug or use it as a portable default.
 
 **Next read-only inspection:** `cat /proc/asound/card0/stream0` (only for this observed session) to view the USB audio streaming descriptors and supported formats without starting any stream, recording or playback.
+
+### USB PCM stream descriptors (2026-10-13)
+
+Read-only kernel information from `cat /proc/asound/card0/stream0` (ALSA card `0` was the HRI-200 in this session):
+
+| Direction | Status | USB interface/altset | Format | Channels | Endpoint | Synchronization |
+| --- | --- | --- | --- | --- | --- | --- |
+| Playback (host to HRI-200) | Stop | Interface 2, Altset 1 | S16_LE, 16-bit | 2 (FL, FR) | 0x02 OUT | ADAPTIVE |
+| Capture (HRI-200 to host) | Stop | Interface 1, Altset 1 | S16_LE, 16-bit | 1 (MONO) | 0x81 IN | ASYNC |
+
+Both interfaces enumerate these discrete sample rates (Hz): **8000, 11025, 16000, 22050, 32000, 44100, 48000**.
+
+This confirms that standard kernel USB/ALSA drivers expose **descriptors for both capture and playback**, not that real PCM audio has been recorded/playback-tested. No stream was started in this test. No PTT was enabled, and the functions of left/right playback channels are not established. Do not assume 16-bit PCM over USB is the same as native C4FM speech frames or YAESU's proprietary room protocol.
+
+**Architecture consequence:** implement an ALSA adapter with runtime USB device identification (avoid `hw:0` and fixed card indices), sample-format negotiation and optional explicit channel selection/downmix/upmix/resampling. Keep audio transport separate from control (serial/HID) and from future WIRES-X network signaling. Default TX disabled.
+
+**Next read-only check:** `cat /proc/asound/pcm` to enumerate ALSA PCM logical devices and directions; do not start `arecord` or `aplay` on this shared TETRA host during descriptor-only diagnostics.
