@@ -218,3 +218,50 @@ The serial tty resolves to USB interface `1-1.3.1:1.0`, under USB device `1-1.3.
 These two devices attach to the same upstream hub `1-1.3`, but **sharing a hub alone is insufficient proof of physical unit pairing on a multi-unit system**. Portable discovery must independently validate each device's USB parent identities and handle multiple candidates explicitly. Neither the host-specific paths nor device numbers are suitable as defaults.
 
 The sysfs ancestor traversal used by `tools/hri200_discovery.py` is structurally consistent with both observed links. The script is not yet verified by execution on the physical Raspberry Pi. Next safe gate: check Python availability, then review how to transfer and execute the read-only script, with operator approval for any disk modifications.
+
+### Real Raspberry Pi run of the repository discovery tool
+
+The operator fetched the published repository script (4,466 bytes) into `/tmp/hri200_discovery.py` and ran it **read-only** via:
+
+```sh
+python3 -B /tmp/hri200_discovery.py
+```
+
+Reported Python version: **3.13.5**. The complete resulting JSON was:
+
+```json
+{
+  "audio": [
+    {
+      "alsa_id": "codec",
+      "card": "card0",
+      "pcm": {
+        "capture": ["/dev/snd/pcmC0D0c"],
+        "playback": ["/dev/snd/pcmC0D0p"]
+      },
+      "pid": "0003",
+      "usb_port": "1-1.3.2",
+      "usb_product": "HRI-200 A(CH1) USB Audio codec",
+      "vid": "26aa"
+    }
+  ],
+  "note": "Candidate enumeration only; no hardware I/O or proven physical USB pairing.",
+  "schema": "hri200-linux-discovery-v1",
+  "serial": [
+    {
+      "device": "/dev/ttyACM0",
+      "pid": "0002",
+      "usb_port": "1-1.3.1",
+      "usb_product": "HRI-200 Communication device A",
+      "vid": "26aa"
+    }
+  ],
+  "status": "one_serial_one_audio_candidate"
+}
+```
+
+**Verified real-hardware milestone:** the **actual GitHub implementation** successfully enumerated the HRI-200 communication and sound interfaces on a Raspberry Pi 4 using Linux sysfs, without hardcoding numerical tty/ALSA card identifiers. The result exposes one serial candidate and one audio candidate. PCM playback and capture device names are enumerated, not opened or tested.
+
+**Explicit limitations:** driver recognition does not prove physical pairing in a multi-unit setup, serial command framing, bidirectional HRI audio streams, PTT/HID functionality, or compatibility with proprietary YAESU WIRES-X networking. No USB device file was opened, no RF TX, no new daemon installed, no TETRA service change. A temporary copy of the script was downloaded to `/tmp` by the operator; the script itself performed no device I/O.
+
+**License/publication follow-up:** public-repository content and attribution terms are under review; adding LICENSE/NOTICE will require confirmation of the intended copyright holder and license selection.
