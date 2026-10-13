@@ -22,9 +22,22 @@ Read-only PowerShell device enumeration reported the following with OK status:
 | USB input HID | HIDClass | VID 26AA, PID 0003, MI 03 | `HidUsb` |
 | HID consumer-control collection | HIDClass | VID 26AA, PID 0003, MI 03 | service not reported (PnP status OK) |
 
-`USB\\Class_02&SubClass_02&Prot_01` is advertised among compatible IDs for PID 0002, consistent with a CDC ACM serial function. **Native Linux `cdc_acm` binding is still to be verified on real hardware.** No hardware writes, firmware updates, or RF transmissions were performed.
+`USB\\Class_02&SubClass_02&Prot_01` is advertised among compatible IDs for PID 0002, consistent with a CDC ACM serial function. **Linux `cdc_acm`, `snd-usb-audio` and `usbhid` driver bindings are now verified on a Raspberry Pi 4.** No hardware writes, firmware updates, or RF transmissions were performed.
 
 User-supplied reference archives examined preliminarily: `wx2010en.zip`, `HRI-200_ver101(ENG).zip`, `wiresmon-x2000en.zip`. **Do not commit, copy, or redistribute YAESU EXE/DLL/firmware or user secrets in this repository.**
+
+
+## Physical Raspberry Pi 4 USB result (2026-10-13)
+
+The operator connected a real HRI-200 to a Raspberry Pi 4 Linux host and obtained the following read-only evidence:
+
+| USB device | Interface(s) | Kernel driver | USB speed |
+| --- | --- | --- | --- |
+| 26aa:0002 communication device A | 0 (Communications), 1 (CDC Data) | `cdc_acm` | 12 Mbit/s |
+| 26aa:0003 audio/HID | 0, 1, 2 (Audio) | `snd-usb-audio` | 12 Mbit/s |
+| 26aa:0003 audio/HID | 3 (HID) | `usbhid` | 12 Mbit/s |
+
+**The kernel-side USB recognition milestone has been achieved** without installing a YAESU driver. No serial session, audio sample, HID exchange, RF, proprietary network authentication or functional WIRES-X operation has been tested. Next step: inspect the character device nodes using read-only commands. See [USB test evidence](docs/USB_PROBE.md).
 
 ## Design requirements
 
