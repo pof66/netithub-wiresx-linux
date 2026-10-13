@@ -1,3 +1,7 @@
+# Copyright 2026 IU0NDT
+# SPDX-License-Identifier: Apache-2.0
+# Source: https://github.com/pof66/netithub-wiresx-linux
+
 """Offline unit tests: synthetic ZIPs only, no proprietary software."""
 import io
 import tempfile
