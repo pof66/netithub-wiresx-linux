@@ -297,3 +297,40 @@ drwxr-xr-x 3 root root 0 Oct 13 23:58 hidraw0
 **Evidence:** Linux exposes a `hidraw0` class child under HID device `0003:26AA:0003.0001`. The HID interface was already observed as bound to `usbhid`; this strengthens the discovery evidence, but does **not** prove that `/dev/hidraw0` is currently present/accessible, and does not prove any HID report or command exchange. The HID instance suffix and `hidrawN` index are transient.
 
 **Proposed next non-invasive step:** read the cached **HID report descriptor** from sysfs with `od -An -tx1 -v /sys/bus/hid/devices/0003:26AA:0003.0001/report_descriptor`. This accesses a kernel sysfs attribute, not the `/dev/hidraw0` node, does not write device controls, does not assert PTT and should not affect ongoing TETRA services. Interpret with care: advertised HID report structure alone does not establish report semantics, command values, packet framing or YAESU WIRES-X compatibility. Keep read-only until separately authorized.
+
+### HRI-200 HID report descriptor decoded (read-only)
+
+The operator read the cached kernel HID report descriptor through sysfs, without opening `/dev/hidraw*`:
+
+```sh
+od -An -tx1 -v /sys/bus/hid/devices/0003:26AA:0003.0001/report_descriptor
+```
+
+Exact **31-byte** output:
+
+```text
+05 0c 09 01 a1 01 15 00 25 01 09 e9 09 ea 75 01
+95 02 81 2a 09 e2 95 01 81 2e 95 05 81 01 c0
+```
+
+#### Standard USB HID interpretation
+
+| Bytes | HID item | Meaning |
+| --- | --- | --- |
+| `05 0c` | Usage Page (Consumer) | Standard Consumer usage page `0x0C` |
+| `09 01` | Usage (Consumer Control) | Consumer Control application |
+| `a1 01` | Collection (Application) | Begin application collection |
+| `15 00`, `25 01` | Logical Min/Max | Values 0 and 1 |
+| `09 e9`, `09 ea` | Consumer Usage | Volume Increment and Volume Decrement |
+| `75 01`, `95 02`, `81 2a` | Report Size/Count/Input | Two 1-bit input fields, low bits 0 and 1 |
+| `09 e2`, `95 01`, `81 2e` | Consumer Usage, count and Input | One 1-bit Mute input field, bit 2 |
+| `95 05`, `81 01` | Count/Input (Constant) | Five constant padding bits, bits 3–7 |
+| `c0` | End Collection | Closes application collection |
+
+No Report ID item appears, and there is only one declared input report, whose **payload is one byte (8 bits)**. There are no Output or Feature report declarations in this descriptor.
+
+**Engineering consequence:** the HID interface declares standard Consumer Volume+/Volume−/Mute input usage. It is **not evidence** that HID carries PTT, COS/COR, connection control, WIRES-X session commands or radio control. Even actual delivery of these inputs is not proven by a cached descriptor alone. Do not infer proprietary control commands or send trial HID output reports to this interface.
+
+**Project direction:** do not invest in speculative HID PTT writes. Keep this HID as a read-only optional device in portable discovery; focus future control-protocol research on documented/observed interactions with the separate CDC ACM serial interface in a safely isolated environment. Live CDC control, DTR/RTS and audio I/O remain outside the current authorization.
+
+**Next safe path confirmation:** `readlink -f /sys/class/hidraw/hidraw0/device`, to validate sysfs ancestry for portable future HID discovery. `hidraw0` is this host's current name only, not a hardcoded application setting.
