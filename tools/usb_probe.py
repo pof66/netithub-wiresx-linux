@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# Copyright 2026 IU0NDT
+# SPDX-License-Identifier: Apache-2.0
+# Source: https://github.com/pof66/netithub-wiresx-linux
+
 """Read-only Linux sysfs discovery for YAESU HRI-200 USB interfaces.
 
 No USB device nodes are opened; serial, audio and HID ports are never touched.
