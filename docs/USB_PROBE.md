@@ -128,3 +128,20 @@ This confirms the driver-level discoverability gate. **Still untested:** opening
 **Portability rule:** Never assume `hw:0,0` or `/dev/ttyACM0` is stable. Resolve the sound/serial interfaces from matching USB parent identity and inspect capabilities dynamically.
 
 **Next read-only test:** Verify the kernel-reported USB vendor/product identity of the current serial interface using a filtered `udevadm info` query. Do not open the port or assert DTR/RTS on the shared TETRA host.
+
+### Serial port USB parent identity positively established
+
+Read-only output from `udevadm info -q property -n /dev/ttyACM0` (filtered to USB identity and driver fields):
+
+```text
+ID_MODEL_ID=0002
+ID_VENDOR_ID=26aa
+ID_USB_INTERFACE_NUM=00
+ID_USB_DRIVER=cdc_acm
+```
+
+This **directly confirms** that the currently observed `/dev/ttyACM0` is the HRI-200 communication device A (`26aa:0002`, USB interface 00), not merely an arbitrary serial device. The name `ttyACM0` is ephemeral and must not be stored as a deployment invariant.
+
+**Portable discovery requirement:** at startup resolve eligible tty character devices by authoritative sysfs/udev USB ancestry (`idVendor=26aa`, `idProduct=0002`, interface 00), detect ambiguity rather than choosing the first match, expose explicit operator selection where two identical interfaces exist and never open the serial device during the read-only discovery phase. These are discovery selectors, not a valid WIRES-X session protocol.
+
+**Next hardware inventory gate:** read the current ALSA capture device udev metadata without opening audio (`/dev/snd/pcmC0D0c` as observed *only on this host at this time*). Afterwards design discovery by USB identity rather than ALSA numerical card index.
