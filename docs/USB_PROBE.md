@@ -203,3 +203,18 @@ Do not hardcode `card0`, USB topology addresses (`1-1.3.2`), `/sys/devices/platf
 **Still pending:** run the Python discovery tool against the Raspberry Pi (no I/O), verify the serial device symlink topology, test cross-platform mocks and then separately evaluate actual audio/HRI control. Neither this path nor the present ALSA status demonstrates WIRES-X network connectivity.
 
 **Next single read-only check:** `readlink -f /sys/class/tty/ttyACM0/device` to inspect the USB interface ancestry for the already-identified YAESU serial endpoint.
+
+### Serial sysfs USB interface ancestry confirmed
+
+Read-only physical Raspberry Pi 4 output:
+
+```text
+# readlink -f /sys/class/tty/ttyACM0/device
+/sys/devices/platform/scb/fd500000.pcie/pci0000:00/0000:00:00.0/0000:01:00.0/usb1/1-1/1-1.3/1-1.3.1/1-1.3.1:1.0
+```
+
+The serial tty resolves to USB interface `1-1.3.1:1.0`, under USB device `1-1.3.1` (previously identified using `udevadm` as YAESU `26aa:0002`). The audio ALSA card resolved to USB interface `1-1.3.2:1.0`, under USB device `1-1.3.2` (previously confirmed as YAESU `26aa:0003`).
+
+These two devices attach to the same upstream hub `1-1.3`, but **sharing a hub alone is insufficient proof of physical unit pairing on a multi-unit system**. Portable discovery must independently validate each device's USB parent identities and handle multiple candidates explicitly. Neither the host-specific paths nor device numbers are suitable as defaults.
+
+The sysfs ancestor traversal used by `tools/hri200_discovery.py` is structurally consistent with both observed links. The script is not yet verified by execution on the physical Raspberry Pi. Next safe gate: check Python availability, then review how to transfer and execute the read-only script, with operator approval for any disk modifications.
