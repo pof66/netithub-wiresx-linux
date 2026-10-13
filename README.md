@@ -92,3 +92,13 @@ Research reports, interoperability tests, mock devices, documentation and indepe
 - [Offline test suite](tests) — synthetic fixtures. GitHub Actions definitions are in [offline-tests.yml](.github/workflows/offline-tests.yml); CI completion has not yet been independently verified.
 
 **Warning:** None of these tools authenticates to YAESU, controls HRI-200, sends RF, or constitutes a working WIRES-X Linux client. The installer remains future work after a validated, permitted implementation exists.
+
+## License and attribution
+
+**Original project credit:** Copyright © 2026 **IU0NDT**.
+
+The original code and documentation independently authored for this repository are distributed under the [Apache License, Version 2.0](LICENSE). The [NOTICE](NOTICE) identifies the original project and its source: [pof66/netithub-wiresx-linux](https://github.com/pof66/netithub-wiresx-linux).
+
+Redistribution and derivative works must comply with the license, including preserving applicable copyright, license and attribution notices, and the relevant contents of `NOTICE` as described in Section 4. This is **not** a requirement to display IU0NDT in a program's splash screen or to obtain permission for every reuse. We welcome an explicit link to this repository when discussing or republishing derived material.
+
+The license applies only to rights held in the independently created project material; it **does not license** YAESU software, firmware, documentation, names or trademarks, or any independently licensed third-party material. YAESU is not a sponsor or affiliate of this project.
