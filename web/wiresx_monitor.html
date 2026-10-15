@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>NET.IT.HUB / WIRES-X Monitor</title>
+  <link rel="stylesheet" href="/wiresx_monitor.css">
+  <script src="/wiresx_monitor.js" defer></script>
+</head>
+<body>
+  <div class="frame">
+    <header class="masthead">
+      <div class="identity"><span class="mark">N<span class="small-dot">·</span></span><div><div class="kicker">RADIO OPERATIONS / TELEMETRY</div><h1>NET.IT.HUB <span>/ WIRES-X</span></h1></div></div>
+      <div class="status-head"><span class="state-indicator"></span><div><strong>LAST HEARD / SNAPSHOT</strong><small>Non è un monitor RX/TX in diretta</small></div></div>
+    </header>
+    <div class="info-line"><span>HRI-200 RESEARCH <span class="sep">/</span> WIRES-X LOG INTERFACE</span><span id="last-check">SYNC: IN ATTESA</span><span>REFRESH 15 S <span class="sep">/</span> LOCAL ONLY</span></div>
+    <main>
+      <div class="page-head"><div><div class="eyebrow">01 / OBSERVATION</div><h2>Registro ricevuto</h2><p>Una vista degli ultimi dati presenti in <code>WiresAccess.log</code>. Nessun collegamento ai servizi o alle radio.</p></div><div class="privacy-pill" id="privacy">IDENTITÀ OSCURATE</div></div>
+      <section class="metric-grid" aria-label="Riepilogo">
+        <article class="metric"><div class="metric-label">REGISTRAZIONI TOTALI</div><div class="metric-value" id="m-total">—</div><div class="metric-sub">Righe presenti nel file</div></article>
+        <article class="metric"><div class="metric-label">DATE UTILIZZABILI</div><div class="metric-value" id="m-valid">—</div><div class="metric-sub">Escluse date anno 2000</div></article>
+        <article class="metric"><div class="metric-label">POSIZIONI DISPONIBILI</div><div class="metric-value" id="m-gps">—</div><div class="metric-sub">Solo conteggio, non coordinate</div></article>
+        <article class="metric special"><div class="metric-label">ULTIMO ASCOLTO REGISTRATO</div><div class="metric-time" id="m-latest">—</div><div class="metric-sub">Orario dal log, non stato attuale</div></article>
+      </section>
+      <div class="content-grid">
+        <section class="panel history"><div class="panel-title"><div><div class="eyebrow">02 / ARCHIVE</div><h3>Distribuzione annuale</h3></div><span class="minor">LAST HEARD</span></div><div id="year-chart" class="year-chart"><span class="muted">Caricamento...</span></div><div class="footnote">Le date del 2000 sono mostrate separatamente come possibili valori iniziali.</div><div class="divider"></div><div class="panel-title subsection"><div><div class="eyebrow">CHANNEL SUMMARY</div><h3>Origine indicata dal log</h3></div></div><div id="channel-list" class="channel-list"></div></section>
+        <section class="panel listing"><div class="panel-title"><div><div class="eyebrow">03 / STATIONS</div><h3>Ultime ricezioni</h3></div><span class="minor" id="list-count">—</span></div><div class="filters"><label class="search-wrap"><span class="visually-hidden">Cerca stazione o canale</span><input id="search" type="search" placeholder="Filtra stazione o canale" autocomplete="off"></label><label><span class="visually-hidden">Filtra per anno</span><select id="year"><option value="">TUTTI GLI ANNI</option></select></label><label class="check-wrap"><input id="gps-only" type="checkbox"> SOLO POSIZIONE</label></div><div class="table-wrap"><table><thead><tr><th>STAZIONE</th><th>ULTIMA RX</th><th>CANALE</th><th>GPS</th></tr></thead><tbody id="rows"><tr><td colspan="4" class="empty">Attendo dati...</td></tr></tbody></table></div><div class="panel-bottom">La tabella mostra fino a 500 righe, ordinate per ultima ricezione. <span id="truncated"></span></div></section>
+      </div>
+      <div class="warning" role="note"><span class="warning-symbol">!</span><div><strong>STATO RF / PTT NON DETERMINABILE</strong><p>Questa sorgente è uno snapshot del Last Heard. Non prova chi stia trasmettendo adesso e non contiene una cronologia completa di tutti i PTT.</p></div></div>
+    </main>
+    <footer><span>NET.IT.HUB / ORIGINAL RESEARCH <span class="sep">—</span> IU0NDT</span><span>LOCAL OBSERVABILITY / NO RF CONTROL</span></footer>
+  </div>
+</body>
+</html>
