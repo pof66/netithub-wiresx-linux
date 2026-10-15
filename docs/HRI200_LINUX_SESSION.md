@@ -45,3 +45,20 @@ Port assignment is resolved through sysfs VID/PID; /dev/ttyACM0 is NOT hardcoded
 4. Design a separately approved and isolated BrandMeister integration only after original WIRES-X network and audio have been demonstrated and certified. No BM, XLX or TETRA changes now.
 
 The public repository intentionally contains no original proprietary executables, private traffic captures, identity strings, credentials, or raw R0 responses.
+
+## Integrated Linux test — 2026-10-15
+
+The owner ran the complete original program `tools/hri200_session.py --run-once --rf-isolated` on the RF-isolated Raspberry Pi, using auto-discovery of YAESU USB 26aa:0002 and the existing Linux `cdc_acm` interface. It returned `three_single_shot_exchanges_passed` with no raw R0 identity:
+
+| TX command | Redacted RX classification | TX/RX bytes | Local elapsed time |
+| --- | --- | --- | ---: |
+| M10 | M10 | 5/5 | 0.497 ms |
+| R6423 | R0_REDACTED | 7/74 | 2.332 ms |
+| P010000 | B0_OBSERVED_RESPONSE | 9/17 | 0.704 ms |
+
+Audio and HID candidate discovery reported one of each, but their functions were not opened or validated. This is a genuine **integrated hardware serial success**, not authorized YAESU worldwide network authentication or room connectivity. No TX/RF, BrandMeister, XLX or TETRA service changes occurred in the integrated test.
+
+### Private Windows configuration reference
+
+The owner also supplied a private *text-paste representation* of a configuration file. Its visible header begins `WIRES 3.600     SETTING`; the subsequent data contain non-printable/control bytes and are **not a normal human-readable INI**. Do not assume this is an exact byte-for-byte copy of the original configuration file or that the heading proves what YAESU program version produced it. The original source bytes and any embedded identifiers/secrets must remain off GitHub. The file is retained in the user's private file library as `Testo incollato(4).txt` for later offline investigation. Do not reuse any potential stored credentials in an independent client without verified authorization.
+
