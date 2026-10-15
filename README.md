@@ -86,6 +86,10 @@ Research reports, interoperability tests, mock devices, documentation and indepe
 
 **This project does not yet have a working installer.** Do not treat this repository as an operational radio node.
 
+## Real HRI-200 Linux serial milestone (2026-10-15)
+
+Three single-shot exchanges were independently verified by the owner on an RF-isolated Raspberry Pi 4: M10/M10 (5/5 bytes), R6423/R0 (7/74, identity redacted), and P010000/B0 (9/17). This is confirmed **local CDC communication, not YAESU worldwide network connectivity**. The original [Linux CDC serial driver](hardware/hri200_cdc.py) and [run-once CLI](tools/hri200_session.py) now integrate these observations, use VID/PID discovery instead of hardcoded ports, and require explicit isolation flags for active I/O. See [the hardware test and safety guide](docs/HRI200_LINUX_SESSION.md). No BM/TETRA/XLX changes are part of this milestone.
+
 ## HRI-200 passive protocol engine (Linux core)
 
 The first independent **passive serial-protocol core** is in [core/hri200_protocol.py](core/hri200_protocol.py), with [offline USBPcap replay](tools/hri200_replay.py), [unit tests](tests/test_hri200_protocol.py), [replay tests](tests/test_hri200_replay.py), and [technical documentation](docs/HRI200_PROTOCOL_CORE.md). It reconstructs observed 0x01/0x04 messages from arbitrary input chunks and only returns redacted classifications and basic metrics. It **never opens the live HRI-200 serial port**.
