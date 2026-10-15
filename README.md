@@ -86,6 +86,16 @@ Research reports, interoperability tests, mock devices, documentation and indepe
 
 **This project does not yet have a working installer.** Do not treat this repository as an operational radio node.
 
+## Local WIRES-X Last Heard dashboard (experimental)
+
+The repository now contains an **original, read-only local monitor** for an existing WIRES-X `WiresAccess.log`:
+
+- [Python parser and loopback JSON API](tools/wiresx_lastheard.py) — parses local Last Heard snapshots without any serial, audio, HRI-200, YAESU server or RF interaction.
+- [Dashboard HTML](web/wiresx_monitor.html), [CSS](web/wiresx_monitor.css) and [JavaScript](web/wiresx_monitor.js) — Italian Last Heard table, year/channel summaries, privacy-aware position counts and 15-second refresh.
+- [Synthetic privacy/parser tests](tests/test_wiresx_lastheard.py) and [full Windows/Linux usage guide](docs/LAST_HEARD_MONITOR.md).
+
+**Private by default:** local 127.0.0.1 server only, ephemeral station aliases, no raw GPS, radio ID, or personal log content in the HTTP output. Callsigns require explicit opt-in. This monitor does **not** report live RX/TX, connect to YAESU's network, install services or control radios. The HTTP UI has not yet been verified on the operator's Windows machine. See the guide for commands and limitations.
+
 ## Diagnostics now in this repository
 
 - [Windows HRI-200 PnP inventory](tools/windows/hri200_inventory.ps1) — read-only USB/driver snapshot, excludes full serial instance identifiers. See [instructions](docs/WINDOWS_INVENTORY.md).
