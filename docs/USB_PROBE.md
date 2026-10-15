@@ -407,3 +407,65 @@ The **actual repository implementation** returned (selected complete identity fi
 **Not verified:** actual USB serial messages, DTR/RTS behavior, real PCM capture/playback, HID input events, RF/PTT or proprietary WIRES-X network connections. The temporary script did not open serial/audio/HID nodes; no service or TETRA configuration was changed. Synthetic offline tests added alongside V2 have **not yet been reported as executed**.
 
 **Next milestone:** declare the sysfs-based hardware-discovery stage validated for this host and plan an **offline HRI-200 CDC control-protocol research gate**, starting with public documentation and independently observed authorized behavior. Do not open a live serial port, toggle DTR/RTS, attempt command guesses, or assert RF/PTT on the TETRA server without a separate controlled test authorization.
+
+
+---
+
+### Windows USBPcap CDC capture: passive reference evidence (2026-10-15)
+
+**Scope:** On the isolated Windows reference PC, the original WIRES-X 2.010 application was observed communicating with HRI-200 Communication Device A (USB VID:PID 26aa:0002). These findings concern the **host-to-HRI-200 serial interface**, **not** the separate YAESU WIRES-X Internet/room protocol.
+
+**Acquisition and packet counts**
+
+- The operator explicitly approved installation of USBPcap on the separate Windows PC. The USB filter was operational after a Windows reboot. No Linux/TETRA machine was changed.
+- USBPcap enumerated the serial device at USB capture-time **device address 7**, and the separate audio/HID composite at **address 8**. These addresses and the selected controller are ephemeral and **must never be hardcoded**.
+- The operator captured only device 7, using WIRES-X 2.010 during the trace. Radio/PTT physical isolation was the stated safety precondition; no commands were intentionally injected by the research workflow.
+- The private classic-PCAP file was **57,129 bytes**, with **1,164 records**, magic **D4-C3-B2-A1**, USBPcap LinkType **249**, and **zero trailing bytes** in a structural scan. PCAP/ETL files stay on the operator's PC and are not published.
+- The device-address-7 packet breakdown was:
+
+| Endpoint | Direction/type | Records | Reported USB data-length sum |
+| --- | --- | ---: | ---: |
+| **0x82** | IN / bulk (type 3) | 431 | 3,700 bytes |
+| **0x01** | OUT / bulk (type 3) | 714 | 3,207 bytes |
+| **0x83** | IN / interrupt (type 1) | 1 | 0 bytes |
+| **0x80** | IN / control (type 2) | 12 | 90 bytes |
+| **0x00** | OUT / control (type 2) | 6 | 38 bytes |
+
+USBPcap records include transaction stages; their counts are **not** counts of unique application messages.
+
+**Standard USB CDC ACM control observed**
+
+The capture contained nine control exchanges (setup/completion). Observed control-SETUP prefixes:
+
+| SETUP prefix (hex) | Count | Meaning in USB CDC ACM |
+| --- | ---: | --- |
+| **A1 21** | 6 | GET_LINE_CODING |
+| **21 20** | 2 | SET_LINE_CODING |
+| **21 22 03 00** | 1 | SET_CONTROL_LINE_STATE, wValue=3 |
+
+All eight observed line-coding data values were **00 96 00 00 00 00 08**: **38,400 baud, 8 data bits, no parity, 1 stop bit (8N1)**. The original Windows application was observed setting **DTR+RTS** (wValue=3). This does **not** mean it is safe to reproduce that behavior in Linux; control-line effects and possible PTT wiring require a separately authorized test.
+
+**Sanitized, observed USB bulk application frames**
+
+The recorded examples were delimited by **0x01** and **0x04**, with ASCII content between. This is an observation on the captured sample, **not** a complete universal protocol specification.
+
+| Direction | ASCII content between delimiters | Distinct message occurrences | Interpretation limit |
+| --- | --- | ---: | --- |
+| PC → HRI | **M10** | 1 | Followed by matching response |
+| HRI → PC | **M10** | 1 | Echo-like |
+| PC → HRI | **R6423** | 1 | Followed by R-prefixed response |
+| HRI → PC | **R0[REDACTED]** | 1 | Private response fields intentionally omitted |
+| PC → HRI | **P010000** | 213 | Repeated approximately every second in sampled interval |
+| HRI → PC | **B0 0    0000000** | 213 | Observed shortly after P command |
+| PC → HRI | **D1V0000** | 142 | Recurs, but function unknown |
+
+A sample time ordering relative to first M10: matching reply **+0.4 ms**; R6423 at **+25.7 ms**, sanitized R reply at **+28.0 ms**; first P at **+406.3 ms** and first B reply at **+407.0 ms**. Timing is observed behavior, **not a protocol guarantee**. The meanings of M/R/P/B/D commands, including any PTT or COR semantics, **have not been established**. Do not send speculative command bytes to HRI-200.
+
+**Safety, privacy and next gates**
+
+- Never publish raw PCAP/ETL files, the full R response, device serial numbers, station identifiers, credentials or captured personal data.
+- Next safe implementation: a strictly **offline, passive decoder** working on private traces and sanitized/synthetic fixtures, with tests; no Linux serial device opened or written.
+- The Raspberry Pi TETRA host stays untouched, RF/PTT remain OFF, and OpenPTX, BrandMeister and XLX projects are not modified.
+- This finding does not establish valid credentials, native WIRES-X networking, room control, real audio streaming, or Linux compatibility beyond hardware enumeration. Serial framing and Internet access remain separate research tasks.
+
+See [issue #2](https://github.com/pof66/netithub-wiresx-linux/issues/2) for next investigation steps.
