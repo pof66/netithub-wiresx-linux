@@ -86,6 +86,12 @@ Research reports, interoperability tests, mock devices, documentation and indepe
 
 **This project does not yet have a working installer.** Do not treat this repository as an operational radio node.
 
+## HRI-200 passive protocol engine (Linux core)
+
+The first independent **passive serial-protocol core** is in [core/hri200_protocol.py](core/hri200_protocol.py), with [offline USBPcap replay](tools/hri200_replay.py), [unit tests](tests/test_hri200_protocol.py), [replay tests](tests/test_hri200_replay.py), and [technical documentation](docs/HRI200_PROTOCOL_CORE.md). It reconstructs observed 0x01/0x04 messages from arbitrary input chunks and only returns redacted classifications and basic metrics. It **never opens the live HRI-200 serial port**.
+
+**Milestone boundary:** This is an offline engine, not a native YAESU WIRES-X worldwide network client. Authorized service authentication, rooms, network signaling, audio and BrandMeister bridging are not yet implemented. Live USB interaction and any RF/TX remain separately gated.
+
 ## Local WIRES-X Last Heard dashboard (experimental)
 
 The repository now contains an **original, read-only local monitor** for an existing WIRES-X `WiresAccess.log`:
