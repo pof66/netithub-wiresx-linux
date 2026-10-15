@@ -89,7 +89,7 @@ class FrameStream:
             if byte == END:
                 if not self._discarding:
                     events.append(
-                        FrameEvent(self.direction, classify(self._buffer),
+                        FrameEvent(self.direction, classify(bytes(self._buffer)),
                                    len(self._buffer), timestamp)
                     )
                     self.stats["frames"] += 1
