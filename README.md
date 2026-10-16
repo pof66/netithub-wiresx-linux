@@ -86,6 +86,10 @@ Research reports, interoperability tests, mock devices, documentation and indepe
 
 **This project does not yet have a working installer.** Do not treat this repository as an operational radio node.
 
+## Windows WIRES-X network observation (2026-10-16)
+
+The operator successfully recorded and analyzed metadata from a real Windows WIRES-X client running a room (with no radio connected). [Read the sanitized network evidence report](docs/WIRESX_WINDOWS_NETWORK_EVIDENCE_2026-10-16.md): observed local UDP 46100 and 46122 packet counts, anonymous peers, UDP lengths and time-bin patterns. **No IP addresses, captured payloads, activation identifiers, raw ETL/CAB/CSV or private settings are included.** This is **not** a decoded or functioning WIRES-X network implementation. For the initial Linux project, BrandMeister is an **external party that already connects to the user's room**, so no direct BM bridging or alterations to its configuration are required.
+
 ## Real HRI-200 Linux serial milestone (2026-10-15)
 
 Three single-shot exchanges were independently verified by the owner on an RF-isolated Raspberry Pi 4: M10/M10 (5/5 bytes), R6423/R0 (7/74, identity redacted), and P010000/B0 (9/17). This is confirmed **local CDC communication, not YAESU worldwide network connectivity**. The original [Linux CDC serial driver](hardware/hri200_cdc.py) and [run-once CLI](tools/hri200_session.py) now integrate these observations, use VID/PID discovery instead of hardcoded ports, and require explicit isolation flags for active I/O. See [the hardware test and safety guide](docs/HRI200_LINUX_SESSION.md). No BM/TETRA/XLX changes are part of this milestone.
