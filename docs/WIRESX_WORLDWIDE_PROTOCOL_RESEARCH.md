@@ -24,6 +24,12 @@
 - WiRES-II reference manual, describes a .wsv backup format too: https://manualzz.com/doc/23472595/yaesu-wires-ii-wide-coverage-internet-repeater-enhancemen...
 - K9EQ presentation about Fusion/WIRES-X architecture; background only, NOT a current wire protocol specification: https://files.tapr.org/meetings/DCC_2017/DCC2017-Fusion_from_the_Inside_Chris_Petersen_K9EQ.pdf
 
+## Windows network trace evidence (2026-10-16)
+
+The operator has now collected actual **network-header metadata** (not a server protocol implementation) from the original Windows WIRES-X application, with the radio disconnected. See [the redacted capture analysis](WIRESX_WINDOWS_NETWORK_EVIDENCE_2026-10-16.md) for the measured IPv4 UDP port/direction counts, anonymous peer patterns, message lengths and 10-second timelines.
+
+**Verified:** local UDP 46100 (RX 74, TX 90) and UDP 46122 (RX 64, TX 43) were active; 46122 often received 31-byte UDP datagrams and transmitted 44-byte datagrams, while 46100 often transmitted 139-byte datagrams. **Unknown:** exact messages, which peer is YAESU vs BrandMeister, login sequence and room activation. Limited 54-byte packet prefix prevents application-payload interpretation. The user's existing room is connected **from BrandMeister's side**, so a direct BM adapter is out of scope for the initial native Linux WIRES-X room milestone.
+
 ## What remains UNKNOWN — no fictional protocol claims
 
 - Server names/IP discovery, session sequence, authenticating against the current Yaesu service (including server-issued proof), refresh/reconnect behavior.
