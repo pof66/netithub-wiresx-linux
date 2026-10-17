@@ -83,3 +83,19 @@ A small number of other local ports (46110, 46112, 46114, 46120) saw events in t
 - No fresh capture, installation, Git history rewriting, restart, RF activity or service changes are part of this report.
 
 **Sensitive data policy:** Never commit the private ETL, CAB, CSV, pcap, settings files, IDs, peer IPs, MACs, activation details, credentials or raw application messages.
+
+## Follow-up trace: larger packet prefixes (2026-10-17)
+
+The operator collected a second **private**, time-bounded Windows trace with a configured 256-byte prefix and analyzed the **first 3,000 NDIS packet-capture events only** using an offline header parser. The first recorded packet exposed 60 bytes, and a 1,000-event sample showed captured fragment lengths of **42–318 bytes**, mean **184.297 bytes**. The presence of 318-byte ETW fragments despite a requested 256-byte `PacketTruncateBytes` limit has **not been explained**; do not assume that a fragment contains an entire network packet.
+
+For the preliminary local-port classification (based on source port as TX / destination port as RX, **not yet verified against each packet's NIC MAC or process attribution**), the UDP payload completeness counts were:
+
+| Local UDP port | Presumed direction | Observations | Largest captured UDP payload | Truncated |
+| --- | --- | ---: | ---: | ---: |
+| 46100 | RX | 36 | 214 bytes | 35 |
+| 46100 | TX | 52 | 256 bytes | 3 |
+| 46122 | RX | 63 | 115 bytes | 0 |
+| 46122 | TX | 41 | 183 bytes | 0 |
+
+**Interpretation:** In the sample, the port-46122 candidate datagrams appear completely captured, while the vast majority of port-46100 inbound candidates are not. **No packet contents, activation details, IPs or credentials are published.** Port ownership, on-wire application semantics, peer identity and whether messages represent YAESU control versus external room links are still unknown. Focus next on locally computed privacy-safe structural metrics for fully captured packets; never publish raw payloads or private traces.
+
