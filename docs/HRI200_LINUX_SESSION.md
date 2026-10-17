@@ -42,7 +42,7 @@ Port assignment is resolved through sysfs VID/PID; /dev/ttyACM0 is NOT hardcoded
 1. Confirm the *integrated* tool against the isolated Raspberry, as distinct from the three individually verified manual experiments.
 2. Validate error handling, port disappearance and timing without transmitter connections.
 3. Investigate authorized YAESU WIRES-X worldwide service protocol and authentication. These three CDC exchanges **do not connect** the Raspberry to YAESU worldwide rooms.
-4. Design a separately approved and isolated BrandMeister integration only after original WIRES-X network and audio have been demonstrated and certified. No BM, XLX or TETRA changes now.
+4. BrandMeister-side operators already connect to the owner's WIRES-X room; **no direct BrandMeister bridge is required for the initial Linux client**. Do not modify BM, XLX or TETRA services.
 
 The public repository intentionally contains no original proprietary executables, private traffic captures, identity strings, credentials, or raw R0 responses.
 
