@@ -78,4 +78,17 @@ A nearest-earlier-`P010000` comparison for 142 `D1V0000` frames produced offsets
 
 **Remaining unknown:** `D1V0000` semantics and its relation, if any, to audio, radio control or room state. Do **not** enable periodic hardware writes merely because cadence is observed. The `26AA:0003` composite audio/HID device is separate and its application traffic is **not validated** by this CDC-focused capture.
 
+## Windows USB Audio interface observation (2026-10-17)
+
+A **separate** original Windows WIRES-X USBPcap recording targeted the HRI-200 composite device (`26AA:0003`, USB address 8 **in this capture only**) while the radio remained disconnected. The controller and recorded USB addresses are PC/session dependent, not Linux configuration defaults.
+
+- First 512-byte-snaplen trace: 20,656 isochronous records on IN endpoint `0x81`; 10,328 had an advertised transfer size of 960 bytes but only **353 bytes of payload beyond a 159-byte USBPcap header** were captured. The other 10,328 had zero payload. The 512-byte boundary was reached exactly (`159+353=512`). These records cannot safely be treated as complete application audio.
+- Second trace with a 2,048-byte snaplen: 1,024 isochronous `0x81` records advertised **960 bytes and captured all 960 bytes**, paired with 1,024 zero-payload records. The 1,024 data-bearing records alone amount to 983,040 captured bytes.
+- One inspected complete isochronous transfer contained **10 per-packet descriptors**, each reporting **96 bytes**, totaling 960 bytes. All ten descriptor status fields were zero. This is **one examined transfer**; do not claim every transfer's packet status has been checked.
+- The first capture's per-endpoint scan showed no other recorded transfer type for USB address 8. That observation does **not** establish that HID, USB Control, or OUT audio never occurs; capture conditions, host mode and interface activity matter.
+
+**Interpretation boundary:** Endpoint `0x81` is USB IN (device→Windows) and isochronous traffic is **compatible with** an audio input stream. **Neither the USB audio class/sample format, PCM encoding, sample rate, channel count, precise packet cadence nor the Windows audio device settings are yet established.** For example, a 96-byte packet **if** sent every 1 ms would imply 96 kB/s, compatible with multiple PCM format combinations; the 1-ms interval and any particular PCM configuration still require independent evidence. The new Windows PCAP must remain private and must never enter this repository.
+
+**Next check:** use offline PCAP record timestamps to measure consecutive complete-transfer intervals and consult USB Audio class/host format descriptors or Windows device-format metadata, without extracting, publishing, or playing the captured audio. Do not implement audio playback or radio output before corroboration.
+
 Source: IU0NDT's consent-based offline measurements (2026-10-15 and 2026-10-17). No proprietary executable or private capture in this repository.
