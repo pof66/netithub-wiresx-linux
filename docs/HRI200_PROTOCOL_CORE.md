@@ -50,6 +50,32 @@ Python 3.10+ standard library only; no installs, root privilege, hardware activi
 1. Obtain a clean Raspberry offline test run on the core. Check discovery result again only if the device changes.
 2. Design a **separate disabled-by-default hardware transport** with explicit permission gates, a mock backend first and safe rollback; avoid implicit DTR/RTS changes and serial port contention. Opening a CDC port can have control-line side effects.
 3. Independently study authorized YAESU network/room signaling. Hardware framing alone cannot establish a WIRES-X connection. Do not guess commands.
-4. Only after end-to-end test evidence and explicit approval, plan an isolated BM bridge with audio source/sink control and no changes to the existing operational BM environment.
+4. The existing BrandMeister-side operators independently connect to the owner's WIRES-X room; a direct native BrandMeister bridge is **not required** for the initial Linux room milestone. Do not touch operational BM, XLX or TETRA services.
 
-Source: IU0NDT's consent-based offline measurements (2026-10-15). No proprietary executable or private capture in this repository.
+## Windows USBPcap transfer/timing follow-up (2026-10-17)
+
+The operator re-examined a private locally held Windows HRI-200 USBPcap using **offline, read-only** PowerShell. The report includes only aggregates, without USB payloads, identities or station data.
+
+| USB endpoint | Transfer type | USBPcap records | With captured data | With no captured data |
+| --- | --- | ---: | ---: | ---: |
+| 0x01 | Bulk, PC to adapter | 714 | 357 | 357 |
+| 0x82 | Bulk, adapter to PC | 431 | 215 | 216 |
+| 0x00 and 0x80 | Control | 18 combined | Not categorized | Not categorized |
+| 0x83 | Interrupt | 1 | 0 | 1 |
+
+The complete file holds **1,164 USBPcap records**. The **572 bulk records with captured data** correspond to 357 host→HRI and 215 HRI→host application frames. Empty records may be submission/completion records and are **not proof of empty application messages**. The lone 0x83 interrupt record contains **zero captured payload bytes**; it is not evidence of a CDC SERIAL_STATE indication, USB HID message, PTT, COR or RF status. The captured USB address is capture-local and must not be configured as a default.
+
+**Timing measured from recorded PC→adapter frames** (not an instruction to send them):
+
+| Observed frame label | Samples | Min consecutive interval | Mean consecutive interval | Max consecutive interval |
+| --- | ---: | ---: | ---: | ---: |
+| `P010000` | 213 | 986.8 ms | 1,003.6 ms | 1,043.7 ms |
+| `D1V0000` | 142 | 984.8 ms | 1,500.1 ms | 2,035.7 ms |
+
+For the 141 gaps between `D1V0000` frames, **71 rounded to 1 second** and **70 rounded to 2 seconds**; the full rounded sequence had **140 of 140 possible alternations** (first 20: 1,2 repeated). This is consistent with two messages per three-second interval in this single Windows run, **not an identified command meaning or a tested Linux scheduler**.
+
+A nearest-earlier-`P010000` comparison for 142 `D1V0000` frames produced offsets of **394.5–668.3 ms**, mean **586.8 ms**. Group counts by 50-ms offset bin: 350–399: 1; 400–449: 8; 450–499: 10; 500–549: 9; 550–599: 36; 600–649: 66; 650–699: 12. These offsets vary; do not claim a guaranteed fixed delay.
+
+**Remaining unknown:** `D1V0000` semantics and its relation, if any, to audio, radio control or room state. Do **not** enable periodic hardware writes merely because cadence is observed. The `26AA:0003` composite audio/HID device is separate and its application traffic is **not validated** by this CDC-focused capture.
+
+Source: IU0NDT's consent-based offline measurements (2026-10-15 and 2026-10-17). No proprietary executable or private capture in this repository.
