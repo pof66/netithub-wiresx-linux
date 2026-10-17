@@ -119,3 +119,14 @@ A subsequent offline comparison used SHA-256 **only locally** to test equality o
 The 23-byte presumed inbound and 36-byte presumed outbound datagrams repeated **identically byte-for-byte** in this capture. They are *candidates* for fixed-content periodic signaling, **not yet verified YAESU keepalives**. Equality does not prove purpose, peer identity, authentication, absence of dynamic fields in other sessions, or applicability to an independent client.
 
 **Next evidence gate:** compare temporal spacing and remote-peer consistency of these repeated patterns (privacy-safe counts only), then correlate with operator-observed WIRES-X GUI actions. No network replays or direct service probes.
+
+## Repeated message timing (2026-10-17)
+
+On the owner's private Windows ETL, successive appearances of previously identified byte-identical, complete UDP payload classes on local port 46122 were timed using the first 3,000 NDIS capture events. The original analyzer assigned direction by source/destination local port, **not by NIC MAC or process-level attribution**, so TX/RX remains presumptive.
+
+| Payload class | Messages | Smallest gap | Average consecutive gap | Largest gap |
+| --- | ---: | ---: | ---: | ---: |
+| Presumed RX, 23 bytes | 56 | 913.8 ms | 1,072.8 ms | 5,001.7 ms |
+| Presumed TX, 36 bytes | 37 | 995.5 ms | 1,611.5 ms | 16,005.2 ms |
+
+Both streams have intervals close to 1 second but notable gaps. The averages include these long pauses and must **not** be interpreted as nominal scheduling cadences. The current evidence is **consistent with, not proof of, periodic control/status or keepalive signaling**. No peer role, YAESU command meaning, node authentication, room-online behavior or BrandMeister function has been decoded. Next step: locally extract the relative time and duration of gaps and compare both stream classes against other packet classes and independently noted Windows GUI events, without disclosing trace bytes or identities.
