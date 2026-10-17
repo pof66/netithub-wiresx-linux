@@ -99,3 +99,23 @@ For the preliminary local-port classification (based on source port as TX / dest
 
 **Interpretation:** In the sample, the port-46122 candidate datagrams appear completely captured, while the vast majority of port-46100 inbound candidates are not. **No packet contents, activation details, IPs or credentials are published.** Port ownership, on-wire application semantics, peer identity and whether messages represent YAESU control versus external room links are still unknown. Focus next on locally computed privacy-safe structural metrics for fully captured packets; never publish raw payloads or private traces.
 
+
+## Identical payload classes on port 46122 (2026-10-17)
+
+A subsequent offline comparison used SHA-256 **only locally** to test equality of completely captured UDP application payloads from the same 3,000-event sample. **Hashes, message bytes, IPs and traces were not published or retained in this report.** The direction labels below are presumptive because source/destination UDP ports, not independently verified NIC identity/process, determined them.
+
+| Presumed direction | UDP application payload length | Packets | Unique payloads | Duplicate packets |
+| --- | ---: | ---: | ---: | ---: |
+| RX | 16 bytes | 1 | 1 | 0 |
+| RX | 23 bytes | 56 | 1 | 55 |
+| RX | 99 bytes | 1 | 1 | 0 |
+| RX | 115 bytes | 5 | 1 | 4 |
+| TX | 17 bytes | 1 | 1 | 0 |
+| TX | 21 bytes | 1 | 1 | 0 |
+| TX | 36 bytes | 37 | 1 | 36 |
+| TX | 147 bytes | 1 | 1 | 0 |
+| TX | 183 bytes | 1 | 1 | 0 |
+
+The 23-byte presumed inbound and 36-byte presumed outbound datagrams repeated **identically byte-for-byte** in this capture. They are *candidates* for fixed-content periodic signaling, **not yet verified YAESU keepalives**. Equality does not prove purpose, peer identity, authentication, absence of dynamic fields in other sessions, or applicability to an independent client.
+
+**Next evidence gate:** compare temporal spacing and remote-peer consistency of these repeated patterns (privacy-safe counts only), then correlate with operator-observed WIRES-X GUI actions. No network replays or direct service probes.
